@@ -6,6 +6,9 @@ const sodiAuthority = require('sodi-authority')
 const blurModal = require('blur-modal')
 const addArt = require('./components/add-art')
 
+// plugins
+require('leaflet.smooth_marker_bouncing')
+
 const getToken = () => localStorage.token ? sodiAuthority.load('token') : null
 
 const login = msg => {
@@ -27,6 +30,7 @@ let getMarker = (lat, lng) => {
   let opts = {draggable: true, opacity: 0.7, icon}
   let marker = L.marker([lat, lng], opts)
   marker.bindPopup(addArt({marker}))
+  setTimeout(() => marker.bounce(1), 100)
   return marker
 }
 
