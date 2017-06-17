@@ -16,7 +16,7 @@ ${(elem, opts) => {
       cursor: pointer;
     }
   </style>
-  ${bel([emojione.toImage('✖️')])}
+  ${() => bel([emojione.toImage('✖️')])}
 </close-button>
 `
 
@@ -43,7 +43,7 @@ module.exports = funky`
     <img src="${opts => `data:${opts.contentType};base64,${opts.base64}`}" />
   </main-image>
   <main-content>
-    <top-buttons>${saveButton} ${closeButton()}</top-buttons>
+    <top-buttons>${saveButton} ${closeButton}</top-buttons>
     <textarea placeholder='Description (optional)'></textarea>
   </main-content>
 </create-art>
