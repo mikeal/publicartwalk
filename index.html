@@ -1,7 +1,7 @@
 
 <html>
   <head>
-    <title>Everwhere.art</title>
+    <title>PublicArtWalk</title>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="" type="image/png">
     <style>
@@ -95,7 +95,7 @@
           }
           localStorage.lastLocation = JSON.stringify(obj)
           if (window.onlocation) window.onlocation(obj)
-        }, err => alert(err), geo_options)
+        }, err => alert(err.message), geo_options)
         window.lastLocation = () => JSON.parse(localStorage.lastLocation)
       } else {
         alert('unsupported browser')
