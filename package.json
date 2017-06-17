@@ -24,6 +24,7 @@
     "blur-modal": "^0.3.0",
     "emojione": "^3.0.3",
     "funky": "^2.3.0",
+    "sodi-authority": "^1.3.0",
     "xhr": "^2.4.0"
   }
 }

@@ -2,7 +2,7 @@
 const funky = require('funky')
 const bel = require('bel')
 const emojione = require('emojione')
-const sodiAuthority = require('../sodi-authority')
+const sodiAuthority = require('sodi-authority')
 const blurModal = require('blur-modal')
 const addArt = require('./components/add-art')
 

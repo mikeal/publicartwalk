@@ -1,5 +1,5 @@
 /* globals FileReader */
-const funky = require('../../funky')
+const funky = require('funky')
 const bel = require('bel')
 const toBuffer = require('blob-to-buffer')
 
