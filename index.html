@@ -4,12 +4,17 @@
     <title>PublicArtWalk</title>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no height=device-height" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <style>
-      html,body{margin: 0; padding: 0;}
-      div#map {
-        height: 100%;
-        width: 100%;
-        position: absolute;
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      html, body, #map {
+        height: 100vh;
+        width: 100vw;
       }
       add-button {
         position: absolute;
@@ -112,17 +117,26 @@
         },
         attribution: ''
       })
-      let setMapLocation = () => {
-        let pos = window.lastLocation()
-        console.log(pos)
-        MAP.setView([pos.latitude, pos.longitude], 16)
-      }
       if (localStorage.lastLocation) {
-        setMapLocation()
+        let pos = window.lastLocation()
+        MAP.setView([pos.latitude, pos.longitude], 16)
       } else {
-        window.onlocation = setMapLocation
+        MAP.locate({setView: true, maxZoom: 16})
       }
     </script>
     <script src="bundle.js"></script>
+    <script>
+      // HACK!
+      // Forces the map to us the full height, and no larger
+      // regardless of any top/bottom bar or orientation.
+      const _map = document.getElementById('map')
+      const resize = () => {
+        map.style.height = window.innerHeight
+      }
+      resize()
+      window.onresize = resize
+      window.onorientationchange = resize
+      window.ondeviceorientation = resize
+    </script>
   </body>
 </html>
