@@ -19,7 +19,12 @@ const login = msg => {
 }
 
 let getMarker = (lat, lng) => {
-  let opts = {draggable: true, opacity: 0.7}
+  let icon = L.icon({
+    iconUrl: 'static/crosshair.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
+  })
+  let opts = {draggable: true, opacity: 0.7, icon}
   let marker = L.marker([lat, lng], opts)
   marker.bindPopup(addArt({marker}))
   return marker

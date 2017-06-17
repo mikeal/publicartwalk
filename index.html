@@ -21,6 +21,60 @@
         border-radius:50%;
         padding: 2px 2px 2px 2px;
       }
+      img.art-marker {
+        border-radius:50%;
+        display: inline-block;
+        border: 1px solid white;
+        background-position: center center;
+        background-size: cover;
+      }
+      art-cache {
+        display: none;
+      }
+      art-details {
+        position: absolute;
+        bottom: 20;
+        left: 0;
+        z-index: 9999;
+        margin: 0 0 0 0;
+        width: 100vw;
+        height: 100px;
+        cursor: initial;
+      }
+      art-details create-art, art-details show-art {
+        display: flex;
+        height: 100%;
+        background: white;
+        margin: 10px 10px 10px 10px;
+        padding: 2px 2px 2px 2px;
+      }
+      art-details * main-image {
+        max-width: 200px;
+        height: 100%;
+      }
+      art-details * main-image img {
+        max-width: 200px;
+        height: 100%;
+        display: inline-block;
+        background-position: center center;
+        background-size: cover;
+      }
+      art-details * main-content {
+        width: 100%;
+        flex-grow: 3;
+      }
+      top-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+      top-buttons * {
+        height: 20px;
+      }
+      button {
+        cursor: pointer;
+      }
+
     </style>
     <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css">
     <script src="https://mapzen.com/js/mapzen.js"></script>
@@ -50,6 +104,7 @@
   </head>
   <body>
     <div id="map"></div>
+    <art-cache></art-cache>
     <script>
       window.MAP = L.Mapzen.map('map', {
         tangramOptions: {

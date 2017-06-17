@@ -1,20 +1,7 @@
-/* globals FileReader */
+/* globals L, MAP */
 const funky = require('funky')
-const bel = require('bel')
 const toBuffer = require('blob-to-buffer')
-
-const filler = str => bel`<span class="filler">${str}</span>`
-
-const editableField = funky`
-<editable-field>
-  <style>
-    editable-field span.filler {
-      color: grey;
-    }
-  </style>
-  <div contenteditable=true>${opts => opts.fill ? filler(opts.fill) : ''}</div>
-</editable-field>
-`
+const artMarker = require('./art-marker')
 
 module.exports = funky`
 ${(elem, opts) => {
@@ -22,8 +9,21 @@ ${(elem, opts) => {
   console.log(marker)
   const input = elem.querySelector('input')
 
-  let onImageComplete = (buffer, base64) => {
+  let onImageComplete = (contentType, buffer, base64) => {
     console.log('finished', buffer.length)
+    let url = `data:${contentType};base64,${base64}`
+    let icon = L.icon({
+      iconUrl: url,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+      className: 'art-marker'
+    })
+    let loc = marker.getLatLng()
+    let newMarker = L.marker([loc.lat, loc.lng], {icon: icon})
+    marker.removeFrom(MAP)
+
+    artMarker({marker: newMarker, buffer, contentType, base64})
+    newMarker.fire('click')
   }
 
   input.onchange = () => {
@@ -31,7 +31,7 @@ ${(elem, opts) => {
     let image = input.files[0]
     toBuffer(image, (err, buffer) => {
       if (err) throw err
-      onImageComplete(buffer, buffer.toString('base64'))
+      onImageComplete(image.type, buffer, buffer.toString('base64'))
     })
   }
 }}
