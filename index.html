@@ -1,0 +1,73 @@
+
+<html>
+  <head>
+    <title>Everwhere.art</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="" type="image/png">
+    <style>
+      html,body{margin: 0; padding: 0;}
+      div#map {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+      }
+      add-button {
+        position: absolute;
+        top: 10;
+        left: 10;
+        z-index: 9999;
+        cursor:pointer;
+        background: white;
+        border-radius:50%;
+        padding: 2px 2px 2px 2px;
+      }
+    </style>
+    <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css">
+    <script src="https://mapzen.com/js/mapzen.js"></script>
+    <script src="https://mapzen.com/js/mapzen.min.js"></script>
+    <script>
+      L.Mapzen.apiKey = 'mapzen-yMjBa6G';
+      if ("geolocation" in navigator) {
+        let geo_options = {
+          enableHighAccuracy: true,
+          maximumAge        : 30000,
+          timeout           : 27000
+        }
+        let watchID = navigator.geolocation.watchPosition(pos => {
+          let obj = {
+            timestamp: pos.timestamp,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          }
+          localStorage.lastLocation = JSON.stringify(obj)
+          if (window.onlocation) window.onlocation(obj)
+        }, err => alert(err), geo_options)
+        window.lastLocation = () => JSON.parse(localStorage.lastLocation)
+      } else {
+        alert('unsupported browser')
+      }
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      window.MAP = L.Mapzen.map('map', {
+        tangramOptions: {
+          scene: L.Mapzen.BasemapStyles.WalkaboutMoreLabels
+        },
+        attribution: ''
+      })
+      let setMapLocation = () => {
+        let pos = window.lastLocation()
+        console.log(pos)
+        MAP.setView([pos.latitude, pos.longitude], 16)
+      }
+      if (localStorage.lastLocation) {
+        setMapLocation()
+      } else {
+        window.onlocation = setMapLocation
+      }
+    </script>
+    <script src="bundle.js"></script>
+  </body>
+</html>

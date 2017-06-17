@@ -1,0 +1,29 @@
+{
+  "name": "publicartwalk.com",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "deploy": "now -e PAW_COUCHDB=@paw_couchdb",
+    "dev": "budo index.js:bundle.js",
+    "devsocket": "budo index.js:bundle.js & node server.js & wait",
+    "build": "browserify index.js > bundle.js"
+  },
+  "keywords": [],
+  "author": "Mikeal Rogers <mikeal.rogers@gmail.com> (http://www.mikealrogers.com)",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "browserify": "^14.4.0",
+    "budo": "^10.0.3",
+    "now": "^7.0.1"
+  },
+  "dependencies": {
+    "bel": "^5.0.0",
+    "blob-to-buffer": "^1.2.6",
+    "blur-modal": "^0.3.0",
+    "emojione": "^3.0.3",
+    "funky": "^2.3.0",
+    "xhr": "^2.4.0"
+  }
+}
