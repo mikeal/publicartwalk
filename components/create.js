@@ -1,6 +1,10 @@
+/* globals localStorage, REMOTE */
 const funky = require('funky')
 const bel = require('bel')
 const emojione = require('emojione')
+const sodiAuthority = require('sodi-authority')
+const uuid = a => a ? (a^Math.random()*16>>a/4).toString(16) :
+                      ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,uuid)
 
 const closeButton = funky`
 ${(elem, opts) => {
@@ -19,11 +23,28 @@ ${(elem, opts) => {
   ${() => bel([emojione.toImage('✖️')])}
 </close-button>
 `
+const sosModule = require('sos')
+
+const save = (elem, opts) => {
+  elem.onclick = () => {
+    elem.onclick = null
+    let token = sodiAuthority.load('token')
+    let sos = sosModule(token.keypair)
+    sos.authorities.push(token.signature)
+
+    let image = sos.encode(opts.buffer)
+    let doc = sos.encode({loc: opts.marker.toGeoJSON()})
+    // TODO: Pull description
+
+    console.log('here')
+    REMOTE.newArt(doc, image, opts.contentType, (err, info) => {
+      console.log(err, info)
+    })
+  }
+}
 
 const saveButton = funky`
-${(elem, opts) => {
-
-}}
+${save}
 <button>
   save
 </button>

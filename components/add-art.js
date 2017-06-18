@@ -1,4 +1,4 @@
-/* globals L, MAP */
+/* globals L, MAP, alert */
 const funky = require('funky')
 const toBuffer = require('blob-to-buffer')
 const artMarker = require('./art-marker')
@@ -27,8 +27,8 @@ ${(elem, opts) => {
   }
 
   input.onchange = () => {
-    console.log(input.files)
     let image = input.files[0]
+    if (!image.type.startsWith('image')) alert('Not an image.')
     toBuffer(image, (err, buffer) => {
       if (err) throw err
       onImageComplete(image.type, buffer, buffer.toString('base64'))

@@ -1,8 +1,10 @@
 /* globals L, MAP, localStorage */
-const funky = require('funky')
+const qs = require('querystring')
 const bel = require('bel')
 const emojione = require('emojione')
 const sodiAuthority = require('sodi-authority')
+const websocket = require('websocket-stream')
+const methodman = require('methodman')
 const blurModal = require('blur-modal')
 const addArt = require('./components/add-art')
 
@@ -45,4 +47,34 @@ addButton.onclick = (elem, opts) => {
   getMarker(center.lat, center.lng).addTo(MAP)
 }
 
-window.document.body.appendChild(addButton)
+// TODO: detect login and add user options.
+
+const searchParams = qs.parse(window.location.search.slice(1))
+let socketurl
+if (searchParams.devsocket) {
+  socketurl = `ws:localhost:8080`
+} else {
+  socketurl = `wss:publicartwalk.now.sh`
+}
+
+const connect = (onFinish) => {
+  const ws = websocket(socketurl)
+  const meth = methodman(ws)
+  meth.commands({echo: (txt, cb) => cb(null, txt), ping: cb => cb(null)})
+  meth.on('commands', remote => {
+    window.REMOTE = remote
+    window.REMOTE.meth = meth
+    console.log('finish')
+    if (onFinish) onFinish()
+  })
+  ws.on('error', connect)
+  ws.on('end', connect)
+}
+connect(() => window.document.body.appendChild(addButton))
+
+// let substream = meth.stream()
+// // now i can take someStream and .pipe(substream)
+// meth.on('stream', (stream, id) => {
+//   // I'm being sent a stream.
+// })
+
