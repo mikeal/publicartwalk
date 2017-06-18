@@ -28,7 +28,7 @@ ${(elem, opts) => {
 
   input.onchange = () => {
     let image = input.files[0]
-    if (!image.type.startsWith('image')) alert('Not an image.')
+    if (!image.type.startsWith('image')) return alert('Not an image.')
     toBuffer(image, (err, buffer) => {
       if (err) throw err
       onImageComplete(image.type, buffer, buffer.toString('base64'))

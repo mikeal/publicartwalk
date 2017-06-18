@@ -2,6 +2,7 @@
 const qs = require('querystring')
 const bel = require('bel')
 const emojione = require('emojione')
+const jsonstream2 = require('jsonstream2')
 const sodiAuthority = require('sodi-authority')
 const websocket = require('websocket-stream')
 const methodman = require('methodman')
@@ -64,13 +65,22 @@ const connect = (onFinish) => {
   meth.on('commands', remote => {
     window.REMOTE = remote
     window.REMOTE.meth = meth
-    console.log('finish')
     if (onFinish) onFinish()
+  })
+  meth.on('stream:database', stream => {
+    console.log('database')
+    let parser = jsonstream2.parse([/./])
+    stream.pipe(parser).on('data', obj => {
+      console.log(obj)
+    })
   })
   ws.on('error', connect)
   ws.on('end', connect)
 }
-connect(() => window.document.body.appendChild(addButton))
+connect(() => {
+  window.document.body.appendChild(addButton)
+  REMOTE.bbox(MAP.getBounds().toBBoxString())
+})
 
 // let substream = meth.stream()
 // // now i can take someStream and .pipe(substream)

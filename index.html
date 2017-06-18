@@ -100,7 +100,7 @@
           }
           localStorage.lastLocation = JSON.stringify(obj)
           if (window.onlocation) window.onlocation(obj)
-        }, err => alert(err.message), geo_options)
+        }, err => alert('Location error ' + err.message), geo_options)
         window.lastLocation = () => JSON.parse(localStorage.lastLocation)
       } else {
         alert('unsupported browser')

@@ -4,11 +4,13 @@ const jsonstream2 = require('jsonstream2')
 const corsify = require('corsify')
 const events = require('events')
 const http = require('http')
+const request = require('request')
 const sos = require('sos')()
 const sodiAuthority = require('sodi-authority')
 
 const defaultdb = 'https://mikeal.cloudant.com/dropub-audio'
-const storage = require('./lib/storage')(process.env.PAW_COUCHDB || defaultdb)
+const dburl = process.env.PAW_COUCHDB || defaultdb
+const storage = require('./lib/storage')(dburl)
 
 const changes = new events.EventEmitter()
 
@@ -17,7 +19,7 @@ storage.feed.on('change', change => {
   changes.emit(change.id, change.doc)
 })
 
-function validAuthority (signature) {
+const validAuthority = signature => {
   for (var i = 0; i < sodiAuthority.knownKeys.length; i++) {
     let key = sodiAuthority.knownKeys[i]
     if (signature.publicKey === key.key) {
@@ -29,7 +31,18 @@ function validAuthority (signature) {
   return false
 }
 
-function onWebsocketStream (stream) {
+const queryPoints = (bbox, cb) => {
+  let params = `bbox=${bbox}&include_docs=true`
+  let url = `${dburl}/_design/geospatial/_geo/allgeo?${params}`
+  request(url, {json: true}, (err, resp, results) => {
+    if (err) return cb(err)
+    let status = resp.statusCode
+    if (status !== 200) return cb(new Error(`Code not 200, ${status}`))
+    cb(null, results)
+  })
+}
+
+const onWebsocketStream = stream => {
   let rpc = {}
   let databaseStream = jsonstream2.stringify()
   let sent = new Map()
@@ -43,6 +56,13 @@ function onWebsocketStream (stream) {
     }
     sent.set(obj._id, obj._rev)
     databaseStream.write(obj)
+  }
+
+  rpc.bbox = (bbox) => {
+    queryPoints(bbox, (err, results) => {
+      if (err) return
+      results.rows.forEach(row => write(row.doc))
+    })
   }
 
   rpc.newArt = (doc, image, contentType, cb) => {
@@ -86,5 +106,5 @@ const cors = corsify({
 
 const handler = (req, res) => {}
 const app = http.createServer(cors(handler))
-const wss = websocket.createServer({server: app}, onWebsocketStream)
+websocket.createServer({server: app}, onWebsocketStream)
 app.listen(8080)
