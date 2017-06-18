@@ -1,7 +1,7 @@
 /* globals MAP */
 const funky = require('funky')
 const createComponent = require('./create')
-const detailsComponent = null // require('./details')
+const detailsComponent = require('./details')
 
 const cache = document.querySelector('art-cache')
 const mapdiv = document.querySelector('div#map')

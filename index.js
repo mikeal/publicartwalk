@@ -8,6 +8,7 @@ const websocket = require('websocket-stream')
 const methodman = require('methodman')
 const blurModal = require('blur-modal')
 const addArt = require('./components/add-art')
+const artMarker = require('./components/art-marker')
 
 // plugins
 require('leaflet.smooth_marker_bouncing')
@@ -58,7 +59,29 @@ if (searchParams.devsocket) {
   socketurl = `wss:publicartwalk.now.sh`
 }
 
-console.log(socketurl)
+window.COUCHDB = 'https://mikeal.cloudant.com/public-art-walk'
+
+const onMarker = doc => {
+  let elem = document.getElementById(doc._id)
+  if (!elem) {
+    let icon = L.icon({
+      iconUrl: `${window.COUCHDB}/${doc._id}/image`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+      className: 'art-marker'
+    })
+    let opts = {draggable: true, opacity: 0.7, icon}
+    let coords = [...doc.loc.geometry.coordinates].reverse()
+    let marker = L.marker(coords, opts)
+    elem = artMarker({doc, marker})
+    elem.id = doc._id
+  } else {
+    if (elem._rev !== doc._rev) {
+      elem.update({doc})
+    }
+  }
+  elem._rev = doc._rev
+}
 
 const connect = (onFinish) => {
   const ws = websocket(socketurl)
@@ -70,10 +93,9 @@ const connect = (onFinish) => {
     if (onFinish) onFinish()
   })
   meth.on('stream:database', stream => {
-    console.log('database')
     let parser = jsonstream2.parse([/./])
     stream.pipe(parser).on('data', obj => {
-      console.log(obj)
+      onMarker(obj)
     })
   })
   ws.on('error', () => connect())

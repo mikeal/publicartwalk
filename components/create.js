@@ -2,30 +2,12 @@
 const funky = require('funky')
 const bel = require('bel')
 const emojione = require('emojione')
-const blurModal = require('blur-modal')
 const sodiAuthority = require('sodi-authority')
+const closeButton = require('./close-button')
 
-const closeButton = funky`
-${(elem, opts) => {
-  elem.onclick = () => {
-    let parent = elem.parentNode
-    while (parent.tagName !== 'ART-DETAILS') parent = parent.parentNode
-    parent.hide()
-  }
-}}
-<close-button>
-  <style>
-    close-button {
-      cursor: pointer;
-    }
-  </style>
-  ${() => bel([emojione.toImage('✖️')])}
-</close-button>
-`
 const sosModule = require('sos')
 
 const save = (elem, opts) => {
-
   let grey = () => {
     let img = elem.querySelector('img')
     img.style.opacity = 0.4
@@ -46,7 +28,7 @@ const save = (elem, opts) => {
       sos.authorities.push(token.signature)
 
       let image = {data: opts.base64, content_type: opts.contentType}
-      let doc = sos.encode({loc: opts.marker.toGeoJSON()})
+      let doc = sos.encode({loc: opts.marker.toGeoJSON(), type: 'art'})
       // TODO: Pull description
       REMOTE.newArt(doc, image, (err, info) => {
         console.log(err, info)
