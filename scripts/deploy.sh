@@ -30,7 +30,7 @@ copy_assets ../build/staging
 
 git checkout -f origin/stable
 STABLE_REV=$(git rev-parse --short HEAD)
-npm run build
+npm run build-bundle
 copy_assets ../build
 
 cd ../build

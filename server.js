@@ -1,3 +1,4 @@
+const overlap = require('bounding-box-overlap-test')
 const websocket = require('websocket-stream')
 const methodman = require('methodman')
 const jsonstream2 = require('jsonstream2')
