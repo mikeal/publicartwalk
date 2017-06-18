@@ -1,0 +1,142 @@
+
+<html>
+  <head>
+    <title>PublicArtWalk</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="https://cdn.jsdelivr.net/emojione/assets/3.0/png/32/1f3a8.png" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no height=device-height" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      html, body, #map {
+        height: 100vh;
+        width: 100vw;
+      }
+      add-button {
+        position: absolute;
+        top: 10;
+        left: 10;
+        z-index: 9999;
+        cursor:pointer;
+        background: white;
+        border-radius:50%;
+        padding: 2px 2px 2px 2px;
+      }
+      img.art-marker {
+        border-radius:50%;
+        display: inline-block;
+        border: 1px solid white;
+        background-position: center center;
+        background-size: cover;
+      }
+      art-cache {
+        display: none;
+      }
+      art-details {
+        position: absolute;
+        bottom: 20;
+        left: 0;
+        z-index: 9999;
+        margin: 0 0 0 0;
+        width: 100vw;
+        height: 100px;
+        cursor: initial;
+      }
+      art-details create-art, art-details show-art {
+        display: flex;
+        height: 100%;
+        background: white;
+        margin: 10px 10px 10px 10px;
+        padding: 2px 2px 2px 2px;
+      }
+      art-details * main-image {
+        max-width: 200px;
+        height: 100%;
+      }
+      art-details * main-image img {
+        max-width: 200px;
+        height: 100%;
+        display: inline-block;
+        background-position: center center;
+        background-size: cover;
+      }
+      art-details * main-content {
+        width: 100%;
+        flex-grow: 3;
+      }
+      top-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+      top-buttons * {
+        height: 32px;
+      }
+      button {
+        cursor: pointer;
+      }
+
+    </style>
+    <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css">
+    <script src="https://mapzen.com/js/mapzen.js"></script>
+    <script src="https://mapzen.com/js/mapzen.min.js"></script>
+    <script>
+      L.Mapzen.apiKey = 'mapzen-yMjBa6G';
+      if ("geolocation" in navigator) {
+        let geo_options = {
+          enableHighAccuracy: true,
+          maximumAge        : 30000,
+          timeout           : 27000
+        }
+        let watchID = navigator.geolocation.watchPosition(pos => {
+          let obj = {
+            timestamp: pos.timestamp,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          }
+          localStorage.lastLocation = JSON.stringify(obj)
+          if (window.onlocation) window.onlocation(obj)
+        }, err => alert('Location error ' + err.message), geo_options)
+        window.lastLocation = () => JSON.parse(localStorage.lastLocation)
+      } else {
+        alert('unsupported browser')
+      }
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <art-cache></art-cache>
+    <script>
+      window.MAP = L.Mapzen.map('map', {
+        tangramOptions: {
+          scene: L.Mapzen.BasemapStyles.WalkaboutMoreLabels
+        },
+        attribution: ''
+      })
+      if (localStorage.lastLocation) {
+        let pos = window.lastLocation()
+        MAP.setView([pos.latitude, pos.longitude], 16)
+      } else {
+        MAP.locate({setView: true, maxZoom: 16})
+      }
+    </script>
+    <script src="bundle.js"></script>
+    <script>
+      // HACK!
+      // Forces the map to us the full height, and no larger
+      // regardless of any top/bottom bar or orientation.
+      const _map = document.getElementById('map')
+      const resize = () => {
+        map.style.height = window.innerHeight
+      }
+      resize()
+      window.onresize = resize
+      window.onorientationchange = resize
+      window.ondeviceorientation = resize
+    </script>
+  </body>
+</html>
