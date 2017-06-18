@@ -2,6 +2,7 @@
 const funky = require('funky')
 const bel = require('bel')
 const emojione = require('emojione')
+const blurModal = require('blur-modal')
 const sodiAuthority = require('sodi-authority')
 
 const closeButton = funky`
@@ -24,27 +25,48 @@ ${(elem, opts) => {
 const sosModule = require('sos')
 
 const save = (elem, opts) => {
-  elem.onclick = () => {
+  let _save = () => {
+    console.log('saving')
     elem.onclick = null
-    let token = sodiAuthority.load('token')
-    let sos = sosModule(token.keypair)
-    sos.authorities.push(token.signature)
+    elem.ontouchstart = null
+    elem.style.display = 'none'
 
-    let image = sos.encode(opts.buffer)
-    let doc = sos.encode({loc: opts.marker.toGeoJSON()})
-    // TODO: Pull description
+    // TODO: add loading UI.
 
-    REMOTE.newArt(doc, image, opts.contentType, (err, info) => {
-      console.log(err, info)
+    window.requestAnimationFrame(() => {
+      let token = sodiAuthority.load('token')
+      let sos = sosModule(token.keypair)
+      sos.authorities.push(token.signature)
+
+      let image = {data: opts.base64, content_type: opts.contentType}
+      let doc = sos.encode({loc: opts.marker.toGeoJSON()})
+      // TODO: Pull description
+      REMOTE.newArt(doc, image, (err, info) => {
+        console.log(err, info)
+        // TODO: Remove elements
+      })
     })
   }
+
+  elem.onclick = _save
+  elem.ontouchstart = _save
 }
 
 const saveButton = funky`
 ${save}
-<button>
-  save
-</button>
+<save-button>
+  <style>
+    save-button {
+      border-radius: 20%;
+      border: 1px solid black;
+      cursor: pointer:
+      width: 100px:
+      height: 40px;
+      text-align: center;
+    }
+  </style>
+  save me
+</save-button>
 `
 
 module.exports = funky`

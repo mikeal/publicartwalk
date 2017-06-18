@@ -66,7 +66,7 @@ const onWebsocketStream = stream => {
     })
   }
 
-  rpc.newArt = (doc, image, contentType, cb) => {
+  rpc.newArt = (doc, image, cb) => {
     let authSignature = doc.signature.authorities[0]
     if (doc.from.data.hex !== authSignature.message.publicKey) {
       return cb(new Error('Authority signature does not match signing key.'))
@@ -79,12 +79,13 @@ const onWebsocketStream = stream => {
     if (!doc.loc) {
       return cb(new Error('Document missing location data.'))
     }
-    image = sos.decode(image)
+    if (!image.content_type || !image.data) {
+      return cb(new Error('Document missing image data.'))
+    }
+
     let user = authSignature.message.user
     doc.creator = {type: user.type, login: user.login, avatar: user.avatar}
-    doc._attachments = {
-      image: {content_type: contentType, data: image.toString('base64')}
-    }
+    doc._attachments = { image }
     doc.created = Date.now()
     storage.db.post(doc, cb)
   }

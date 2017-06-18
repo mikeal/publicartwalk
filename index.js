@@ -58,6 +58,8 @@ if (searchParams.devsocket) {
   socketurl = `wss:publicartwalk.now.sh`
 }
 
+console.log(socketurl)
+
 const connect = (onFinish) => {
   const ws = websocket(socketurl)
   const meth = methodman(ws)
@@ -65,6 +67,7 @@ const connect = (onFinish) => {
   meth.on('commands', remote => {
     window.REMOTE = remote
     window.REMOTE.meth = meth
+    console.log(REMOTE)
     if (onFinish) onFinish()
   })
   meth.on('stream:database', stream => {
@@ -74,8 +77,8 @@ const connect = (onFinish) => {
       console.log(obj)
     })
   })
-  ws.on('error', connect)
-  ws.on('end', connect)
+  ws.on('error', () => connect())
+  ws.on('end', () => connect())
 }
 connect(() => {
   window.document.body.appendChild(addButton)
