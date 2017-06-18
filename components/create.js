@@ -25,11 +25,18 @@ ${(elem, opts) => {
 const sosModule = require('sos')
 
 const save = (elem, opts) => {
+
+  let grey = () => {
+    let img = elem.querySelector('img')
+    img.style.opacity = 0.4
+    img.style.filter = 'alpha(opacity=40)'
+  }
+
   let _save = () => {
     console.log('saving')
     elem.onclick = null
     elem.ontouchstart = null
-    elem.style.display = 'none'
+    grey()
 
     // TODO: add loading UI.
 
@@ -43,7 +50,9 @@ const save = (elem, opts) => {
       // TODO: Pull description
       REMOTE.newArt(doc, image, (err, info) => {
         console.log(err, info)
-        // TODO: Remove elements
+        // TODO: wait for document to show up from the database.
+        elem.parentNode.querySelector('close-button').click()
+        opts.marker.remove()
       })
     })
   }
@@ -57,15 +66,10 @@ ${save}
 <save-button>
   <style>
     save-button {
-      border-radius: 20%;
-      border: 1px solid black;
-      cursor: pointer:
-      width: 100px:
-      height: 40px;
-      text-align: center;
+      cursor: pointer;
     }
   </style>
-  save me
+  ${() => bel([emojione.toImage('💽')])}
 </save-button>
 `
 

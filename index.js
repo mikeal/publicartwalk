@@ -67,7 +67,6 @@ const connect = (onFinish) => {
   meth.on('commands', remote => {
     window.REMOTE = remote
     window.REMOTE.meth = meth
-    console.log(REMOTE)
     if (onFinish) onFinish()
   })
   meth.on('stream:database', stream => {
